@@ -227,7 +227,7 @@ func (fd *FileDescriptor) FindSymbolWithDeps(name string, public bool) Descripto
 		deps = fd.deps
 	}
 	for _, dep := range deps {
-		d = findSymbol(dep, name, true)
+		d = findSymbol(dep, name, false)
 		if d != nil {
 			return d
 		}
