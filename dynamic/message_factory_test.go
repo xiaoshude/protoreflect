@@ -9,13 +9,13 @@ import (
 	"github.com/golang/protobuf/ptypes/any"
 	"github.com/golang/protobuf/ptypes/duration"
 	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/golang/protobuf/ptypes/struct"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/golang/protobuf/ptypes/wrappers"
 
-	"github.com/jhump/protoreflect/desc"
-	"github.com/jhump/protoreflect/internal/testprotos"
-	"github.com/jhump/protoreflect/internal/testutil"
+	"github.com/xiaoshude/protoreflect/desc"
+	"github.com/xiaoshude/protoreflect/internal/testprotos"
+	"github.com/xiaoshude/protoreflect/internal/testutil"
 )
 
 var wellKnownTypes = []proto.Message{

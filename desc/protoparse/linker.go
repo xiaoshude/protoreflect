@@ -9,9 +9,9 @@ import (
 	"github.com/golang/protobuf/proto"
 	dpb "github.com/golang/protobuf/protoc-gen-go/descriptor"
 
-	"github.com/jhump/protoreflect/desc"
-	"github.com/jhump/protoreflect/desc/internal"
-	"github.com/jhump/protoreflect/desc/protoparse/ast"
+	"github.com/xiaoshude/protoreflect/desc"
+	"github.com/xiaoshude/protoreflect/desc/internal"
+	"github.com/xiaoshude/protoreflect/desc/protoparse/ast"
 )
 
 type linker struct {

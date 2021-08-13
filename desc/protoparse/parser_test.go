@@ -13,10 +13,10 @@ import (
 	"github.com/golang/protobuf/proto"
 	dpb "github.com/golang/protobuf/protoc-gen-go/descriptor"
 
-	"github.com/jhump/protoreflect/codec"
-	"github.com/jhump/protoreflect/desc"
-	"github.com/jhump/protoreflect/internal"
-	"github.com/jhump/protoreflect/internal/testutil"
+	"github.com/xiaoshude/protoreflect/codec"
+	"github.com/xiaoshude/protoreflect/desc"
+	"github.com/xiaoshude/protoreflect/internal"
+	"github.com/xiaoshude/protoreflect/internal/testutil"
 )
 
 func TestEmptyParse(t *testing.T) {

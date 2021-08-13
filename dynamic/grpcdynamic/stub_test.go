@@ -11,11 +11,11 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
-	"github.com/jhump/protoreflect/desc"
-	"github.com/jhump/protoreflect/dynamic"
-	"github.com/jhump/protoreflect/grpcreflect"
-	grpc_testing "github.com/jhump/protoreflect/internal/testprotos/grpc"
-	"github.com/jhump/protoreflect/internal/testutil"
+	"github.com/xiaoshude/protoreflect/desc"
+	"github.com/xiaoshude/protoreflect/dynamic"
+	"github.com/xiaoshude/protoreflect/grpcreflect"
+	grpc_testing "github.com/xiaoshude/protoreflect/internal/testprotos/grpc"
+	"github.com/xiaoshude/protoreflect/internal/testutil"
 )
 
 var unaryMd *desc.MethodDescriptor
