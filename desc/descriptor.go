@@ -207,6 +207,35 @@ func (fd *FileDescriptor) FindSymbol(symbol string) Descriptor {
 	return nil
 }
 
+// FindSymbol returns the descriptor contained within this file
+// and in all deps file!!!
+//for the
+// element with the given fully-qualified symbol name. If no such element
+// exists then this method returns nil.
+func (fd *FileDescriptor) FindSymbolWithDeps(name string, public bool) Descriptor {
+	d := fd.symbols[name]
+	if d != nil {
+		return d
+	}
+
+	// When public = false, we are searching only directly imported symbols. But we
+	// also need to search transitive public imports due to semantics of public imports.
+	var deps []*FileDescriptor
+	if public {
+		deps = fd.publicDeps
+	} else {
+		deps = fd.deps
+	}
+	for _, dep := range deps {
+		d = findSymbol(dep, name, true)
+		if d != nil {
+			return d
+		}
+	}
+
+	return nil
+}
+
 // FindMessage finds the message with the given fully-qualified name. If no
 // such element exists in this file then nil is returned.
 func (fd *FileDescriptor) FindMessage(msgName string) *MessageDescriptor {
