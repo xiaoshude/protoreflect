@@ -1462,6 +1462,21 @@ func createMethodDescriptor(fd *FileDescriptor, parent *ServiceDescriptor, enclo
 	return &MethodDescriptor{proto: md, parent: parent, file: fd, fqn: methodName}, methodName
 }
 
+func (md *MethodDescriptor) Resolve(path []int32, scopes []scope) error {
+	md.sourceInfoPath = append([]int32(nil), path...) // defensive copy
+	if desc, err := resolve(md.file, md.proto.GetInputType(), scopes); err != nil {
+		return err
+	} else {
+		md.inType = desc.(*MessageDescriptor)
+	}
+	if desc, err := resolve(md.file, md.proto.GetOutputType(), scopes); err != nil {
+		return err
+	} else {
+		md.outType = desc.(*MessageDescriptor)
+	}
+	return nil
+}
+
 func (md *MethodDescriptor) resolve(path []int32, scopes []scope) error {
 	md.sourceInfoPath = append([]int32(nil), path...) // defensive copy
 	if desc, err := resolve(md.file, md.proto.GetInputType(), scopes); err != nil {
