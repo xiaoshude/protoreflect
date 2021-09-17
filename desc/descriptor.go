@@ -350,6 +350,38 @@ func createMessageDescriptor(fd *FileDescriptor, parent Descriptor, enclosing st
 	return ret, msgName
 }
 
+func (md *MessageDescriptor) Resolve(path []int32, scopes []scope) error {
+	md.sourceInfoPath = append([]int32(nil), path...) // defensive copy
+	path = append(path, internal.Message_nestedMessagesTag)
+	scopes = append(scopes, messageScope(md))
+	for i, nmd := range md.nested {
+		if err := nmd.resolve(append(path, int32(i)), scopes); err != nil {
+			return err
+		}
+	}
+	path[len(path)-1] = internal.Message_enumsTag
+	for i, ed := range md.enums {
+		ed.resolve(append(path, int32(i)))
+	}
+	path[len(path)-1] = internal.Message_fieldsTag
+	for i, fld := range md.fields {
+		if err := fld.resolve(append(path, int32(i)), scopes); err != nil {
+			return err
+		}
+	}
+	path[len(path)-1] = internal.Message_extensionsTag
+	for i, exd := range md.extensions {
+		if err := exd.resolve(append(path, int32(i)), scopes); err != nil {
+			return err
+		}
+	}
+	path[len(path)-1] = internal.Message_oneOfsTag
+	for i, od := range md.oneOfs {
+		od.resolve(append(path, int32(i)))
+	}
+	return nil
+}
+
 func (md *MessageDescriptor) resolve(path []int32, scopes []scope) error {
 	md.sourceInfoPath = append([]int32(nil), path...) // defensive copy
 	path = append(path, internal.Message_nestedMessagesTag)
