@@ -350,38 +350,6 @@ func createMessageDescriptor(fd *FileDescriptor, parent Descriptor, enclosing st
 	return ret, msgName
 }
 
-func (md *MessageDescriptor) Resolve(path []int32, scopes []scope) error {
-	md.sourceInfoPath = append([]int32(nil), path...) // defensive copy
-	path = append(path, internal.Message_nestedMessagesTag)
-	scopes = append(scopes, messageScope(md))
-	for i, nmd := range md.nested {
-		if err := nmd.resolve(append(path, int32(i)), scopes); err != nil {
-			return err
-		}
-	}
-	path[len(path)-1] = internal.Message_enumsTag
-	for i, ed := range md.enums {
-		ed.resolve(append(path, int32(i)))
-	}
-	path[len(path)-1] = internal.Message_fieldsTag
-	for i, fld := range md.fields {
-		if err := fld.resolve(append(path, int32(i)), scopes); err != nil {
-			return err
-		}
-	}
-	path[len(path)-1] = internal.Message_extensionsTag
-	for i, exd := range md.extensions {
-		if err := exd.resolve(append(path, int32(i)), scopes); err != nil {
-			return err
-		}
-	}
-	path[len(path)-1] = internal.Message_oneOfsTag
-	for i, od := range md.oneOfs {
-		od.resolve(append(path, int32(i)))
-	}
-	return nil
-}
-
 func (md *MessageDescriptor) resolve(path []int32, scopes []scope) error {
 	md.sourceInfoPath = append([]int32(nil), path...) // defensive copy
 	path = append(path, internal.Message_nestedMessagesTag)
@@ -485,6 +453,51 @@ func (md *MessageDescriptor) IsMapEntry() bool {
 // GetFields returns all of the fields for this message.
 func (md *MessageDescriptor) GetFields() []*FieldDescriptor {
 	return md.fields
+}
+
+type JsonField struct {
+	Type       string
+	Name       string
+	Options    string
+	IsRequired bool
+	IsRepeated bool
+	Fields     []JsonField
+	Enum       string
+	OneOf      string
+}
+
+// TODO: 处理递归引用 message 的问题
+func getJsonFields(md *MessageDescriptor) []JsonField {
+	res := []JsonField{}
+	for _, field := range md.fields {
+		oneJsonField := JsonField{
+			Name:       field.GetJSONName(),
+			Type:       field.GetType().String(),
+			Options:    field.GetOptions().String(),
+			IsRequired: field.IsRequired(),
+			IsRepeated: field.IsRepeated(),
+		}
+		// oneOf          *OneOfDescriptor
+		// msgType        *MessageDescriptor
+		// enumType
+		if field.msgType != nil {
+			// TODO: 这里是不是要 getSymbolWithDeps
+			oneJsonField.Fields = getJsonFields(field.msgType)
+		} else if field.enumType != nil {
+			oneJsonField.Enum = field.enumType.String()
+		} else if field.oneOf != nil {
+			oneJsonField.OneOf = field.oneOf.String()
+		}
+
+		res = append(res, oneJsonField)
+	}
+
+	return res
+}
+
+// GetFields returns all of the fields for this message.
+func (md *MessageDescriptor) GetResolvedFields() []JsonField {
+	return getJsonFields(md)
 }
 
 // GetNestedMessageTypes returns all of the message types declared inside this message.
