@@ -466,6 +466,10 @@ type JsonField struct {
 	OneOf      string
 }
 
+const MAX_RECURSIVE = 6
+
+var counter = 0
+
 // TODO: 处理递归引用 message 的问题
 func getJsonFields(md *MessageDescriptor) []JsonField {
 	res := []JsonField{}
@@ -481,8 +485,12 @@ func getJsonFields(md *MessageDescriptor) []JsonField {
 		// msgType        *MessageDescriptor
 		// enumType
 		if field.msgType != nil {
-			// TODO: 这里是不是要 getSymbolWithDeps
-			oneJsonField.Fields = getJsonFields(field.msgType)
+			if counter < MAX_RECURSIVE {
+				counter++
+				// TODO: 这里是不是要 getSymbolWithDeps
+				oneJsonField.Fields = getJsonFields(field.msgType)
+				counter--
+			}
 		} else if field.enumType != nil {
 			oneJsonField.Enum = field.enumType.String()
 		} else if field.oneOf != nil {
