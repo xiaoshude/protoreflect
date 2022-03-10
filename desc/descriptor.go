@@ -464,6 +464,7 @@ type JsonField struct {
 	Fields     []JsonField
 	Enum       string
 	OneOf      string
+	Comments   *dpb.SourceCodeInfo_Location
 }
 
 const MAX_RECURSIVE = 6
@@ -474,12 +475,14 @@ var counter = 0
 func getJsonFields(md *MessageDescriptor) []JsonField {
 	res := []JsonField{}
 	for _, field := range md.fields {
+		// commentsStr, _ := json.Marshal(field.GetSourceInfo())
 		oneJsonField := JsonField{
 			Name:       field.GetJSONName(),
 			Type:       field.GetType().String(),
 			Options:    field.GetOptions().String(),
 			IsRequired: field.IsRequired(),
 			IsRepeated: field.IsRepeated(),
+			Comments:   field.GetSourceInfo(),
 		}
 		// oneOf          *OneOfDescriptor
 		// msgType        *MessageDescriptor
